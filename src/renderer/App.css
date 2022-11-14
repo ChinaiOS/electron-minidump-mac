@@ -19,6 +19,13 @@ body {
   align-items: center;
 }
 
+.background {
+  background-color: aqua;
+  width: unset;
+  height: 100px;
+
+}
+
 button {
   background-color: white;
   padding: 10px 20px;
