@@ -1,35 +1,42 @@
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import { useEffect, useState, createRef } from 'react';
+// import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
+// import { useEffect, useState, createRef } from 'react';
 // import icon from '../../assets/icon.svg';
+import { useEffect, createRef } from 'react';
 import './App.css';
 
-import { InboxOutlined } from '@ant-design/icons';
+// import { InboxOutlined } from '@ant-design/icons';
+
+// import type { UploadProps } from 'antd';
+// import { message, Upload } from 'antd';
+import { message } from 'antd';
+import { Alert } from 'antd';
+
 import 'antd/dist/antd.css';
-import type { UploadProps } from 'antd';
-import { message, Upload } from 'antd';
+// import { Button, Space } from 'antd';
+
 // import React from 'react';
 
-const { Dragger } = Upload;
+// const { Dragger } = Upload;
 
-const props: UploadProps = {
-    name: 'file',
-    multiple: true,
-    action: '/Users/zhangchao/Downloads',
-    onChange(info) {
-        const { status } = info.file;
-        if (status !== 'uploading') {
-            console.log(info.file, info.fileList);
-        }
-        if (status === 'done') {
-            message.success(`${info.file.name} file uploaded successfully.`);
-        } else if (status === 'error') {
-            message.error(`${info.file.name} file upload failed.`);
-        }
-    },
-    onDrop(e) {
-        console.log('Dropped files', e.dataTransfer.files);
-    },
-};
+// const props: UploadProps = {
+//     name: 'file',
+//     multiple: true,
+//     action: '/Users/zhangchao/Downloads',
+//     onChange(info) {
+//         const { status } = info.file;
+//         if (status !== 'uploading') {
+//             console.log(info.file, info.fileList);
+//         }
+//         if (status === 'done') {
+//             message.success(`${info.file.name} file uploaded successfully.`);
+//         } else if (status === 'error') {
+//             message.error(`${info.file.name} file upload failed.`);
+//         }
+//     },
+//     onDrop(e) {
+//         console.log('Dropped files', e.dataTransfer.files);
+//     },
+// };
 
 // const App: React.FC = () => (
 //   // <Dragger {...props}>
@@ -96,10 +103,9 @@ const props: UploadProps = {
 
 export default function App() {
     // 创建组件引用
-    let dropRef = createRef();
+    let dropRef: any = createRef();
 
-    const { isFile, setFile } = useState(true);
-
+    // const [file, setFile] = useState<boolean>(true);
 
     // const background = document.getElementsByClassName('background');
     // background.addEventListener("dragover", e => {
@@ -111,66 +117,65 @@ export default function App() {
     useEffect(() => {
         // 监听拖放事件
         const dropArea: any = dropRef.current;
-        dropArea.addEventListener('dragover',  (e: any) => {
-            e.preventDefault();
+        dropArea.addEventListener('dragover', (event: any) => {
+            event.preventDefault();
         });
 
-        dropArea.addEventListener('drop', (e: any) => {
-            let items = e.dataTransfer.items;
+        dropArea.addEventListener('drop', (event: any) => {
+            let items = event.dataTransfer.items;
             for (let i = 0; i <= items.length - 1; i++) {
                 let item = items[i];
                 if (item.kind === 'file') {
                     // FileSystemFileEntry 或 FileSystemDirectoryEntry 对象
                     let entry = item.webkitGetAsEntry();
                     // 递归地获取entry下包含的所有File
-                    getFileFromEntryRecursively(entry);
+                    console.log(entry);
+                    if (entry.isFile) {
+                        // setFile(true);
+                        entry.file(
+                            (file: any) => {
+                                // addFileToList({ file, path: entry.fullPath });
+                                console.log(file.path);
+                                console.log(`${file.path}${entry.fullPath}`);
+                            },
+                            (e: any) => {
+                                console.log(e);
+                            }
+                        );
+                    } else {
+                        // setFile(false);
+                        message.error('只能是文件');
+
+                        // let reader = entry.createReader();
+                        // reader.readEntries(
+                        //     entries => {
+                        //         entries.forEach(entry => getFileFromEntryRecursively(entry));
+                        //     },
+                        //     e => {
+                        //         console.log(e);
+                        //     }
+                        // );
+                    }
                 }
             }
-            e.preventDefault();
+            event.preventDefault();
         });
     }, []);
 
     return (
-        <div ref = { dropRef }>
-        <div className="background">
-            拖入DYSM符号文件
-        </div>
-        {/* <Dragger {...props}>
+        <div ref={dropRef}>
+            <div className="background">拖入DYSM符号文件</div>
+            {/* <Dragger {...props}>
             <p className="ant-upload-drag-icon">
             <InboxOutlined />
             </p>
             <p className="ant-upload-text">TEST</p>
             <p className="ant-upload-hint">TEST</p>
         </Dragger> */}
-        <h1>electron-react-boilerplate</h1>
+            <Alert message="Warning Text" type="warning" />
+            <h1>electron-react-boilerplate</h1>
         </div>
     );
-}
-
-
-function getFileFromEntryRecursively(entry: any) {
-    console.log(entry);
-    if (entry.isFile) {
-        entry.file(
-            file => {
-                // addFileToList({ file, path: entry.fullPath });
-                console.log(file.path);
-                console.log(`${file.path}${entry.fullPath}`);
-            },
-            e => { console.log(e); }
-        );
-    } else {
-
-        // let reader = entry.createReader();
-        // reader.readEntries(
-        //     entries => {
-        //         entries.forEach(entry => getFileFromEntryRecursively(entry));
-        //     },
-        //     e => {
-        //         console.log(e);
-        //     }
-        // );
-    }
 }
 
 // {/* // <Router>
